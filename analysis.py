@@ -1,7 +1,7 @@
 # coding:utf-8
 import pandas as pd 
-import seaborn as sns
-sns.set(style='white',color_codes=True)
+# import seaborn as sns
+# sns.set(style='white',color_codes=True)
 import numpy as np
 from sklearn import svm,neighbors
 from sklearn.linear_model import LogisticRegression
@@ -44,7 +44,7 @@ iris_data.loc[iris_data['Species'] == 'Iris-virginica','Species'] = 2
 
 iris_data['Species'] = iris_data['Species'].astype('int')
 
-iris_train,iris_test = train_test_split(iris_data,test_size=0.8,random_state=1)
+iris_train,iris_test = train_test_split(iris_data,test_size=0.2,random_state=1)
 
 iris_train_y = iris_train['Species']
 iris_train_x = iris_train.drop(['Species','SepalLengthCm','SepalWidthCm'],axis=1)
@@ -78,17 +78,49 @@ iris_test_x = iris_test.drop(['Species','SepalLengthCm','SepalWidthCm'],axis=1)
 # plt.show()
 
 # SVM
-# # svm_classifer = svm.SVC()
-# svm_classifer = svm.SVC(kernel='rbf', gamma=0.7)
-# # svm_classifer = svm.SVC(kernel='poly', degree=5)
-# svm_classifer.fit(iris_train_x,iris_train_y)
-# y_pred = svm_classifer.predict(iris_test_x)
-# print metrics.accuracy_score(y_pred,iris_test_y)
+# svm_classifer = svm.SVC()
+svm_classifer = svm.SVC(kernel='rbf', gamma=0.7)
+# svm_classifer = svm.SVC(kernel='poly', degree=5)
+svm_classifer.fit(iris_train_x,iris_train_y)
+y_pred = svm_classifer.predict(iris_test_x)
+accuracy = metrics.accuracy_score(y_pred,iris_test_y)
+print  accuracy
 
 # Decision Tree
 # tree = DecisionTreeClassifier()
 # tree.fit(iris_train_x,iris_train_y)
 # y_pred = tree.predict(iris_test_x)
 # print metrics.accuracy_score(y_pred,iris_test_y)
+
+### 数据可视化
+h = .01
+x_min , x_max = iris_data['PetalLengthCm'].min()-1 ,iris_data['PetalLengthCm'].max()+1
+y_min , y_max = iris_data['PetalWidthCm'].min()-1 ,iris_data['PetalWidthCm'].max()+1
+
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                     np.arange(y_min, y_max, h))
+titles = ['traing result','test result']
+
+plt.subplot(1, 2, 1)
+Z = svm_classifer.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.8)
+plt.scatter(iris_train_x['PetalLengthCm'], iris_train_x['PetalWidthCm'], c=iris_train_y, cmap=plt.cm.coolwarm) #画散点图
+plt.xlabel('petal length')
+plt.ylabel('petal width')
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.title(titles[0])
+
+plt.subplot(1, 2, 2)
+plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.8) 
+plt.scatter(iris_test_x['PetalLengthCm'], iris_test_x['PetalWidthCm'], c=iris_test_y, cmap=plt.cm.coolwarm) #画散点图
+plt.xlabel('petal length')
+plt.ylabel('petal width')
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.title(titles[1]+':  '+str(accuracy))
+
+plt.show()
 
 
