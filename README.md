@@ -116,3 +116,87 @@ sns.pairplot(iris_data.drop("Id", axis=1), hue="Species", size=2)
 sns.plt.show()
 ```
 ![](raw/figure_5.png?raw=true)
+  
+    可以选择PetalLengthCm和PetalWidthCm两个属性做训练
+    
+## 4. 数据清洗
+``` python
+# 去掉Id列
+iris_data = iris_data.drop('Id',axis=1)
+# Species的值修改成数字，并转化类型成int
+iris_data.loc[iris_data['Species'] == 'Iris-setosa','Species'] = 0
+iris_data.loc[iris_data['Species'] == 'Iris-versicolor','Species'] = 1
+iris_data.loc[iris_data['Species'] == 'Iris-virginica','Species'] = 2
+iris_data['Species'] = iris_data['Species'].astype('int')
+# 数据集按照8：2分成训练集和测试集合
+iris_train,iris_test = train_test_split(iris_data,test_size=0.2,random_state=1)
+# 选取PetalLengthCm和PetalWidthCm两个属性做训练
+iris_train_y = iris_train['Species']
+iris_train_x = iris_train.drop(['Species','SepalLengthCm','SepalWidthCm'],axis=1)
+iris_test_y = iris_test['Species']
+iris_test_x = iris_test.drop(['Species','SepalLengthCm','SepalWidthCm'],axis=1)
+```
+## 5. 机器学习
+- LogisticRegression
+``` python
+logreg = LogisticRegression()
+logreg.fit(iris_train_x,iris_train_y)
+y_pred = logreg.predict(iris_test_x)
+print metrics.accuracy_score(iris_test_y,y_pred)
+```
+    
+    准确率为0.7
+
+- KNN
+``` python
+k_range = range(1,10)
+score_list = []
+for k in k_range:	
+	knn = KNeighborsClassifier(n_neighbors=k)
+	knn.fit(iris_train_x,iris_train_y)
+	y_pred = knn.predict(iris_test_x)
+	score_list.append(metrics.accuracy_score(iris_test_y,y_pred))
+
+plt.plot(k_range,score_list)
+plt.title('KNN')
+plt.xlabel('Sepal length')
+plt.ylabel('Sepal width')
+plt.show()
+```
+
+![](raw/figure_7.png?raw=true)
+
+    选取k的值不同，准确率也不同，我们可以看到当k为1和2时，准确率为1.0
+
+- SVM
+``` python
+# svm_classifer = svm.SVC()
+svm_classifer = svm.SVC(kernel='rbf', gamma=0.7)
+# svm_classifer = svm.SVC(kernel='poly', degree=5)
+svm_classifer.fit(iris_train_x,iris_train_y)
+y_pred = svm_classifer.predict(iris_test_x)
+accuracy = metrics.accuracy_score(y_pred,iris_test_y)
+print  accuracy
+```
+    
+    SVM核函数不同，预测结果也不同。这里选择了高斯核，准确率为0.966666666667
+
+- Decision Tree
+``` python
+tree = DecisionTreeClassifier()
+tree.fit(iris_train_x,iris_train_y)
+y_pred = tree.predict(iris_test_x)
+print metrics.accuracy_score(y_pred,iris_test_y)
+```
+    
+    准确率为0.966666666667
+    
+
+## 6. 结果可视化
+- 高斯核SVM模型，可视化表示预测范围
+ 
+ ![](raw/figure_6.png?raw=true)
+ 
+- LogisticRegression模型，可视化表示预测范围
+ ![](raw/figure_8.png?raw=true)
+ 
