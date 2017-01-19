@@ -82,9 +82,37 @@ Name: Species, dtype: int64
  - 类型共有三种，分别为Iris-setosa,Iris-versicolor,Iris-virginica
 
 ## 3. 数据可视化
-- 直方图
+- SepalLengthCm属性的直方图
 ``` python
 sns.distplot(a=iris_data['SepalLengthCm'])
 sns.plt.show()
 ```
+![](raw/figure_1.png?raw=true)
 
+- SepalLengthCm属性的KDE图（Kernel Density Estimation）
+``` python
+sns.FacetGrid(iris_data, hue="Species", size=10).map(sns.kdeplot,"SepalLengthCm").add_legend()
+sns.plt.show()
+```
+![](raw/figure_2.png?raw=true)
+
+- SepalLengthCm和SepalWidthCm属性的散点图
+``` python
+sns.FacetGrid(iris_data, hue="Species",size=10).map(plt.scatter,"SepalLengthCm","SepalWidthCm").add_legend()
+sns.plt.show()
+```
+![](raw/figure_3.png?raw=true)
+
+- PetalLengthCm属性的boxplot图
+``` python
+sns.boxplot(x="Species",y="PetalLengthCm",data=iris_data)
+sns.plt.show()
+```
+![](raw/figure_4.png?raw=true)
+
+- 两两属性求散点图
+``` python
+sns.pairplot(iris_data.drop("Id", axis=1), hue="Species", size=2)
+sns.plt.show()
+```
+![](raw/figure_5.png?raw=true)
