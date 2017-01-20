@@ -198,5 +198,5 @@ print metrics.accuracy_score(y_pred,iris_test_y)
  ![](raw/figure_6.png?raw=true)
  
 - LogisticRegression模型，可视化表示预测范围
- ![](raw/figure_8.png?raw=true)
+ ![](raw/figure_9.png?raw=true)
  
